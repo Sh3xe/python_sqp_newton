@@ -1,4 +1,5 @@
 import numpy as np
+import scipy
 
 h = 0.01
 
@@ -51,6 +52,31 @@ def calculate_hessian(f, x):
 		for j in range(hess.shape[1]):
 			hess[i,j] = calculate_order_2_derivative(f, i, j, x)
 	return hess
+
+def sqp_algorithm(f, g, x0, l0):
+	def sqp_step(x, lamb):
+		l = lambda y: f(y) + (np.transpose(lamb) @ g(y))[0,0]
+		lagrange_hessian = calculate_hessian(l, x)
+		objective_function = lambda a: np.transpose(a)*(0.5*lagrange_hessian*a + calculate_gradient(f, x))
+
+		constrain_function = lambda a: g(x) + calculate_jacobian(g, x)*a
+		constrain_lower_bound = np.zeros(lamb.shape)
+		constrain_upper_bound = constrain_lower_bound
+
+		problem_constrains = scipy.optimize.NonLinearConstraint(
+			constrain_function,
+			constrain_lower_bound,
+			constrain_upper_bound
+		)
+
+		initial_point = np.zeros(x.shape)
+
+		scipy.optimize.minimize(
+			objective_function,
+			initial_point,
+			constraints=problem_constrains
+		)
+	raise NotImplementedError
 
 def newton_method(f, g, x0, l0, num_iters=100):
 	def newton_method_step(x, lamb):

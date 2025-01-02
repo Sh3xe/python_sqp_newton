@@ -23,6 +23,17 @@ def test():
 	print(error)
 
 if __name__ == "__main__":
+	# Example functions given by the ENSTA course
 	x_0 = np.array([[-1.71, 1.59, 1.82, -0.763, -0.763]]).transpose()
 	l_0 = np.ones((3,1))
 	print(newton_method(test_f, test_g, x_0, l_0))
+	print(sqp_algorithm(test_f, test_g, x_0, l_0))
+
+	# Trivial example to test the 1D case
+	# print(newton_method(
+	# 	lambda x: np.array([[x[0,0]*x[0,0]]]),
+	# 	lambda x: np.array([[x[1,0]]]),
+	# 	np.array([[4.0], [3.0]]),
+	# 	np.array([[4.0]]),
+	# 	100
+	# ))
