@@ -57,26 +57,39 @@ def sqp_algorithm(f, g, x0, l0):
 	def sqp_step(x, lamb):
 		l = lambda y: f(y) + (np.transpose(lamb) @ g(y))[0,0]
 		lagrange_hessian = calculate_hessian(l, x)
-		objective_function = lambda a: np.transpose(a)*(0.5*lagrange_hessian*a + calculate_gradient(f, x))
 
-		constrain_function = lambda a: g(x) + calculate_jacobian(g, x)*a
-		constrain_lower_bound = np.zeros(lamb.shape)
+		def objective_function(a: np.array):
+			a_vec = np.transpose(np.array([a]))
+			return (np.transpose(a_vec)@((0.5*lagrange_hessian)@a_vec + calculate_gradient(f, x))).item()
+	
+		def constrain_function (a): 
+			a_vec = np.transpose(np.array([a]))
+			return (g(x) + calculate_jacobian(g, x)@a_vec).flatten()
+		
+		constrain_lower_bound = np.zeros(lamb.shape[0])
 		constrain_upper_bound = constrain_lower_bound
 
-		problem_constrains = scipy.optimize.NonLinearConstraint(
+		problem_constrains = scipy.optimize.NonlinearConstraint(
 			constrain_function,
 			constrain_lower_bound,
 			constrain_upper_bound
 		)
 
-		initial_point = np.zeros(x.shape)
+		initial_point = np.random.random(x.shape[0])*4
 
-		scipy.optimize.minimize(
+		result = scipy.optimize.minimize(
 			objective_function,
 			initial_point,
-			constraints=problem_constrains
+			constraints=problem_constrains,
+			method='trust-constr'
 		)
-	raise NotImplementedError
+		return np.transpose(np.array([result.x])), np.transpose(np.array([result.v[0]]))
+	
+	x_current, l_current = x0, l0
+	for _ in range(1):
+		x_current, l_current = sqp_step(x_current, l_current)
+
+	return x_current, l_current
 
 def newton_method(f, g, x0, l0, num_iters=100):
 	def newton_method_step(x, lamb):

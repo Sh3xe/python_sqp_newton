@@ -24,10 +24,16 @@ def test():
 
 if __name__ == "__main__":
 	# Example functions given by the ENSTA course
-	x_0 = np.array([[-1.71, 1.59, 1.82, -0.763, -0.763]]).transpose()
+	x_0_1 = np.array([[-1.71, 1.59, 1.82, -0.763, -0.763]]).transpose()
+	x_0_2 = np.array([[-1.9, 1.82, 2.02, 0.9, -0.9]]).transpose()
+	x_0_3 = np.array([[1.0, 0.0, 3.0, 0.0, 0.0]]).transpose()
 	l_0 = np.ones((3,1))
-	print(newton_method(test_f, test_g, x_0, l_0))
-	print(sqp_algorithm(test_f, test_g, x_0, l_0))
+	# print(newton_method(test_f, test_g, x_0_1, l_0))
+	# print(newton_method(test_f, test_g, x_0_2, l_0, 1))
+	# print(newton_method(test_f, test_g, x_0_3, l_0))
+	print(sqp_algorithm(test_f, test_g, x_0_2, l_0))
+	print(sqp_algorithm(test_f, test_g, x_0_3, l_0))
+	print(sqp_algorithm(test_f, test_g, x_0_1, l_0))
 
 	# Trivial example to test the 1D case
 	# print(newton_method(
